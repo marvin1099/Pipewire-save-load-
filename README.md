@@ -7,7 +7,7 @@ Also a name to id function is included since its nice to have.
 Go To  
 Main Repo: https://codeberg.org/marvin1099/Pipewire-save-load/releases  
 Backup Repo: https://github.com/marvin1099/Pipewire-save-load/releases  
-Then download the pipewire-script.sh file   
+Then download the pipewire-script.sh file and run it with the needed option   
 
 # Usage
 
