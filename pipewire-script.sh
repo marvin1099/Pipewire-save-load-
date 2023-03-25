@@ -8,12 +8,12 @@
 if [[ $1 = "" ]] #print usage if no argumens are given
 then
     echo "Usage:
- ./wipewire-script.sh save               - To save wires
- ./wipewire-script.sh load               - To load wires
- ./wipewire-script.sh getpid 'nodename'  - To get nodeid
- ./wipewire-script.sh getnid 'portname'  - To get portid
- ./wipewire-script.sh lsnodes            - To list all nodes with names
- ./wipewire-script.sh lsports            - To list all ports with names
+ ./wipewire-script.sh save                             - To save wires
+ ./wipewire-script.sh load                             - To load wires
+ ./wipewire-script.sh getpid 'nodename' 'otherreturn'  - To get nodeid, otherreturn is optional
+ ./wipewire-script.sh getnid 'portname' 'otherreturn'  - To get portid, otherreturn is optional
+ ./wipewire-script.sh lsnodes                          - To list all nodes with names
+ ./wipewire-script.sh lsports                          - To list all ports with names
  The config that is used for save and load is ./pipewirewires.conf"
     exit
 fi
@@ -355,13 +355,19 @@ loadwires() {
 
 getidfromname () {
 name=$1
-options=$2
+retu=$2
+options=$3
 found=0
+exreq=""
 nlist=""
 for i in $options
 do
     if [[ ${i:0:1} == " " ]]
     then
+        if [[ $retu != "" && "$i" == " $retu \""* ]]
+        then
+            exreq=${i:$((${#retu}+2))}
+        fi
         if [[ "$i" == *"\"$name\"" ]]
         then
             found=1
@@ -371,13 +377,18 @@ do
         #echo "$nlist$i"$'\n'
         if [[ $found == 1 ]]
         then
-            echo ${i:6:0-1}
+            if [[ $exreq != "" ]]
+            then
+                echo ${exreq:1:0-1}
+            else
+                echo ${i:6:0-1}
+            fi
+            exreq=""
             found=0
         fi
         nlist=""
         #nlist=$nlist$i$'\n'
     fi
-
 done
 }
 
@@ -429,12 +440,12 @@ fi
 
 if [[ $1 = "getpid" ]] #get port id
 then
-    getidfromname "$2" "$poli"
+    getidfromname "$2" "$3" "$poli"
 fi
 
 if [[ $1 = "getnid" ]] #get node id
 then
-    getidfromname "$2" "$noli"
+    getidfromname "$2" "$3" "$noli"
 fi
 
 if [[ $1 = "lsnodes" ]] #list nodes
