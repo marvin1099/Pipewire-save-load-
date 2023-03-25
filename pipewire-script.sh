@@ -211,6 +211,14 @@ loadwires() {
                         #echo "$cnodei $cnodeo"
                         #echo "if"$'\n'"${nlist:0:0-1}-"$'\n'"${cnodei:1}-"
                         #echo $nlist
+                        if [[ $nlist == "" ]]
+                        then
+                            nlist=" "
+                        fi
+                        if [[ $cnodei == "" ]]
+                        then
+                            cnodei=" "
+                        fi
                         if [[ ${nlist:0:0-1} == ${cnodei:1} ]]
                         then
                             #echo "$nlist"
