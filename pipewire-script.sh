@@ -375,6 +375,10 @@ do
         #nlist=$nlist${i:1}$'\n'
     else
         #echo "$nlist$i"$'\n'
+        if [[ $name == ${i:6:0-1} ]]
+        then
+            found=1
+        fi
         if [[ $found == 1 ]]
         then
             if [[ $exreq != "" ]]
