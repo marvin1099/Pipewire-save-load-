@@ -2,7 +2,8 @@
 
 Messy script to save and load your pipewire wires.  
 Also a name to id function is included since its nice to have.  
-Also keep in mind the old pipewirewires.conf from the bash version doesn't work in the python version.  
+Also keep in mind the old pipewirewires.conf from the bash version  
+doesn't work in the python version.  
 I want to say I used AI a lot for to make this script,   
 this is just one of these set it and forget it scripts.
 
