@@ -61,8 +61,19 @@ def save_wires(links, nodes, ports, output_file):
         inport_name = next((port["port.name"] for port in ports if port["id"] == input_port_id), "Unknown")
 
         # Count occurrence of nodes with the same name before the current node
-        outnode_occurrence = len([node for node in nodes if node["node.name"] == outnode_name and node["id"] != output_node_id])
-        innode_occurrence = len([node for node in nodes if node["node.name"] == innode_name and node["id"] != input_node_id])
+        outnode_occurrence = 0
+        for node in nodes:
+            if node["id"] == output_node_id:
+                break
+            if node["node.name"] == outnode_name:
+                outnode_occurrence += 1
+
+        innode_occurrence = 0
+        for node in nodes:
+            if node["id"] == input_node_id:
+                break
+            if node["node.name"] == innode_name:
+                innode_occurrence += 1
 
         # Store the connection in the connections list
         connection = {
