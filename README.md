@@ -14,7 +14,8 @@ Then download the pipewire-script.py file and run it with the desired options
 
 # Usage
 
-    usage: pipewire-script.py [-h] [-s] [-l] [-d {links,ports,nodes}] [-k] [-i] [-q QUERY] [-v VALUE] [-o OUTPUT] [-c CONFIG]
+    usage: pipewire-script.py [-h] [-s] [-l] [-d {links,ports,nodes}] [-k] [-i] 
+                              [-q QUERY] [-v VALUE] [-o OUTPUT] [-c CONFIG]
 
     Manage PipeWire connections.
 
