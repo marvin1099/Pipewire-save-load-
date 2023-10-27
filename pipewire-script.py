@@ -57,28 +57,33 @@ def save_wires(links, nodes, ports, output_file):
         # Match the IDs to names using nodes and ports dictionaries
         outnode_name = next((node["node.name"] for node in nodes if node["id"] == output_node_id), "Unknown")
         innode_name = next((node["node.name"] for node in nodes if node["id"] == input_node_id), "Unknown")
+        outnode_class = next((node["media.class"] for node in nodes if node["id"] == output_node_id), "Unknown").replace("/","-")
+        innode_class = next((node["media.class"] for node in nodes if node["id"] == input_node_id), "Unknown").replace("/","-")
         outport_name = next((port["port.name"] for port in ports if port["id"] == output_port_id), "Unknown")
         inport_name = next((port["port.name"] for port in ports if port["id"] == input_port_id), "Unknown")
 
-        # Count occurrence of nodes with the same name before the current node
+        # Count occurrences for output node
         outnode_occurrence = 0
         for node in nodes:
             if node["id"] == output_node_id:
                 break
-            if node["node.name"] == outnode_name:
+            if node["node.name"] == outnode_name and node["media.class"] == outnode_class:
                 outnode_occurrence += 1
 
+        # Count occurrences for input node
         innode_occurrence = 0
         for node in nodes:
             if node["id"] == input_node_id:
                 break
-            if node["node.name"] == innode_name:
+            if node["node.name"] == innode_name and node["media.class"] == innode_class:
                 innode_occurrence += 1
 
         # Store the connection in the connections list
         connection = {
             "outnode_name": outnode_name,
+            "outnode_class": outnode_class,
             "innode_name": innode_name,
+            "innode_class": innode_class,
             "outport_name": outport_name,
             "inport_name": inport_name,
             "outnode_occurrence": outnode_occurrence,
@@ -90,7 +95,9 @@ def save_wires(links, nodes, ports, output_file):
     with open(output_file, "w") as f:
         for connection in connections:
             f.write(f"outnode_name = {connection['outnode_name']}\n")
+            f.write(f"outnode_class = {connection['outnode_class']}\n")
             f.write(f"innode_name = {connection['innode_name']}\n")
+            f.write(f"innode_class = {connection['innode_class']}\n")
             f.write(f"outport_name = {connection['outport_name']}\n")
             f.write(f"inport_name = {connection['inport_name']}\n")
             f.write(f"outnode_occurrence = {connection['outnode_occurrence']}\n")
@@ -115,7 +122,9 @@ def load_wires(links, nodes, ports, input_file):
         # Initialize variables for connection information
         connection_info = {
             "outnode_name": None,
+            "outnode_class": None,
             "innode_name": None,
+            "innode_class": None,
             "outport_name": None,
             "inport_name": None,
             "outnode_occurrence": 0,
@@ -133,12 +142,15 @@ def load_wires(links, nodes, ports, input_file):
         connection_info["outnode_occurrence"] = int(connection_info["outnode_occurrence"])
         connection_info["innode_occurrence"] = int(connection_info["innode_occurrence"])
 
+        # Restore class name
+        connection_info["outnode_class"] = connection_info["outnode_class"].replace("-","/")
+        connection_info["innode_class"] = connection_info["innode_class"].replace("-","/")
+
         # Match connection names with provided links, nodes, and ports dictionaries
         matched_outnode_id = None
         matched_innode_id = None
-
         for node in nodes:
-            if node["node.name"] == connection_info["outnode_name"] and node["node.name"] != "Unknown":
+            if node["node.name"] == connection_info["outnode_name"] and node["media.class"] == connection_info["outnode_class"] and node["node.name"] != "Unknown":
                 if connection_info["outnode_occurrence"] == 0:
                     matched_outnode_id = node["id"]
                     break
@@ -146,7 +158,7 @@ def load_wires(links, nodes, ports, input_file):
                     connection_info["outnode_occurrence"] -= 1
 
         for node in nodes:
-            if node["node.name"] == connection_info["innode_name"] and node["node.name"] != "Unknown":
+            if node["node.name"] == connection_info["innode_name"] and node["media.class"] == connection_info["innode_class"] and node["node.name"] != "Unknown":
                 if connection_info["innode_occurrence"] == 0:
                     matched_innode_id = node["id"]
                     break
@@ -170,6 +182,9 @@ def load_wires(links, nodes, ports, input_file):
             print("Warning: Incomplete or mismatched connection - Skipped")
             for key, value in connection_info.items():
                 print(f"{key} = {value}")
+            print("Mached was " + str(matched_outnode_id) + " " + str(matched_innode_id))
+            print("")
+
 
     # Create PipeWire links using pw-link command
     for connection in connections:
