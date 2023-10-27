@@ -10,7 +10,7 @@ this is just one of these set it and forget it scripts.
 Go To  
 Main Repo: https://codeberg.org/marvin1099/Pipewire-save-load/releases  
 Backup Repo: https://github.com/marvin1099/Pipewire-save-load/releases  
-Then download the pipewire-script.sh file and run it with the desired option   
+Then download the pipewire-script.py file and run it with the desired options   
 
 # Usage
 
