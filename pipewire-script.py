@@ -1,5 +1,6 @@
 #!/bin/python
 import subprocess
+import argparse
 import re
 import sys
 
@@ -102,7 +103,7 @@ def save_wires(links, nodes, ports, output_file):
             f.write(f"inport_name = {connection['inport_name']}\n")
             f.write(f"outnode_occurrence = {connection['outnode_occurrence']}\n")
             f.write(f"innode_occurrence = {connection['innode_occurrence']}\n\n")
-    print(f"Connections saved to {output_file}")
+    print(f"Connections saved to {output_file}\n")
 
 def load_wires(links, nodes, ports, input_file):
     connections = []
@@ -191,75 +192,85 @@ def load_wires(links, nodes, ports, input_file):
         outport = connection["link.output.port"]
         inport = connection["link.input.port"]
         subprocess.run(["pw-link", outport, inport])
+    print(f"\nConnections loaded from {input_file}\n")
 
-def get_id_from_name(name, obj):
-    key = ''
-    if any('port.name' in part for part in obj):
-        key = 'port.name'
-    elif any('node.name' in part for part in obj):
-        key = 'node.name'
+def get_info_by_key(data_list, search_key, search_value, output_key):
+    results = []
+    for item in data_list:
+        if item.get(search_key) == search_value:
+            results.append(item.get(output_key))
+    return results
+
+def print_all_keys(data_list):
+    all_keys = set()
+    for item in data_list:
+        all_keys.update(item.keys())
+    print("All Keys:")
+    for key in all_keys:
+        print(key)
+    print("\n")
+
+def main():
+    parser = argparse.ArgumentParser(description="Manage PipeWire connections.")
+    parser.add_argument("-s", "--save", action="store_true", help="Save wires")
+    parser.add_argument("-l", "--load", action="store_true", help="Load wires")
+    parser.add_argument("-d", "--data", choices=["links", "ports", "nodes"], help="Select data type (links, ports, nodes) for searching")
+    parser.add_argument("-k", "--keys", action="store_true", help="Print all keys of data")
+    parser.add_argument("-i", "--list", action="store_true", help="List all items of data")
+    parser.add_argument("-q", "--query", help="Search key")
+    parser.add_argument("-v", "--value", help="Search value")
+    parser.add_argument("-o", "--output", help="Output key for the search")
+    parser.add_argument("-c", "--config", default="pipewirewires.conf", help="Config file to use (default: pipewirewires.conf)")
+
+    args = parser.parse_args()
+
+    # Display help if no main arguments are provided
+    if not any([args.save, args.load, args.data]):
+        parser.print_help()
     else:
-        if key != '':
-            return []
+        pipewire_types = get_pipewire_types()
+        links, nodes, ports = get_sorted_pipewire_types(pipewire_types)
 
-    obj_ids = [part["id"] for part in obj if part[key] == name]
-    return obj_ids
+        if args.save:
+            save_wires(links, nodes, ports, args.config)
+        if args.load:
+            load_wires(links, nodes, ports, args.config)
 
-output_file = "pipewirewires.conf"
-
-if len(sys.argv) < 2:
-    print("Usage:")
-    print("./wipewire-script.py save                             - To save wires")
-    print("./wipewire-script.py load                             - To load wires")
-    print("./wipewire-script.py getpid 'nodename'                - To get nodeid")
-    print("./wipewire-script.py getnid 'portname'                - To get portid")
-    print("./wipewire-script.py lsnodes                          - To list all nodes with names")
-    print("./wipewire-script.py lsports                          - To list all ports with names")
-    print("The config that is used for save and load is ./pipewirewires.conf")
-    sys.exit(1)
+        if args.data and args.query and args.value and args.output:
+            if args.data == "links":
+                results = get_info_by_key(links, args.query, args.value, args.output)
+            elif args.data == "nodes":
+                results = get_info_by_key(nodes, args.query, args.value, args.output)
+            elif args.data == "ports":
+                results = get_info_by_key(ports, args.query, args.value, args.output)
+            else:
+                print("Invalid data type. Use 'links', 'ports', or 'nodes'.")
+        if args.data and args.keys:
+            if args.data == "links":
+                print_all_keys(links)
+            elif args.data == "nodes":
+                print_all_keys(nodes)
+            elif args.data == "ports":
+                print_all_keys(ports)
+            else:
+                print("Invalid data type. Use 'links', 'ports', or 'nodes'.")
+            print("Results:\n" + results.join("\n") + "\n\n")
+        if args.data and args.list:
+            data_list = []
+            if args.data == "links":
+                data_list = links
+            elif args.data == "nodes":
+                data_list = nodes
+            elif args.data == "ports":
+                data_list = ports
+            else:
+                print("Invalid data type. Use 'links', 'ports', or 'nodes'.")
+            if data_list != []:
+                for item in data_list:
+                    print("")
+                    for key, value in item.items():
+                        print(f"{key} = {value}")
+                print(f"\nIn total there are {len(data_list)} {args.data}\n\n")
 
 if __name__ == "__main__":
-    pipewire_types = get_pipewire_types()
-    links, nodes, ports = get_sorted_pipewire_types(pipewire_types)
-
-if sys.argv[1] == "save":
-    save_wires(links, nodes, ports, output_file)
-
-elif sys.argv[1] == "load":
-    load_wires(links, nodes, ports, output_file)
-
-elif sys.argv[1] == "getpid":
-    if len(sys.argv) < 3:
-        print("Error: Port name is required.")
-        sys.exit(1)
-    port_ids = get_id_from_name(sys.argv[2], ports)
-    if port_ids:
-        print("\n".join(port_ids))
-    else:
-        print("Error: No ports not found.")
-
-elif sys.argv[1] == "getnid":
-    if len(sys.argv) < 3:
-        print("Error: Node name is required.")
-        sys.exit(1)
-    node_ids = get_id_from_name(sys.argv[2], nodes)
-    if node_ids:
-        print("\n".join(node_ids))
-    else:
-        print("Error: No nodes not found.")
-
-elif sys.argv[1] == "lsnodes":
-    for i in nodes:
-        print("")
-        for k, v in i.items():
-            print(k + " = " + v)
-    print("")
-    print("In total there are " + str(len(nodes)) + " nodes")
-
-elif sys.argv[1] == "lsports":
-    for i in ports:
-        print("")
-        for k, v in i.items():
-            print(k + " = " + v)
-    print("")
-    print("In total there are " + str(len(ports)) + " ports")
+    main()
