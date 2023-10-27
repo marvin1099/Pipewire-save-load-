@@ -1,9 +1,8 @@
 # Pipewire-save-load
 
 Messy script to save and load your pipewire wires.  
-Also a name to id function is included since its nice to have.  
-Also keep in mind the old pipewirewires.conf from the bash version  
-doesn't work in the python version.  
+Also a search function is included since its nice to have.  
+Also keep in mind the currend version is only compatible with configs created at 0.3.2 or higher.  
 I want to say I used AI a lot for to make this script,   
 this is just one of these set it and forget it scripts.
 
@@ -15,11 +14,23 @@ Then download the pipewire-script.sh file and run it with the desired option
 
 # Usage
 
-      Usage:
-    ./wipewire-script.sh save                             - To save wires
-    ./wipewire-script.sh load                             - To load wires
-    ./wipewire-script.sh getpid 'nodename'                - To get nodeid
-    ./wipewire-script.sh getnid 'portname'                - To get portid
-    ./wipewire-script.sh lsnodes                          - To list all nodes with names
-    ./wipewire-script.sh lsports                          - To list all ports with names
-    The config that is used for save and load is ./pipewirewires.conf
+    usage: pipewire-script.py [-h] [-s] [-l] [-d {links,ports,nodes}] [-k] [-i] [-q QUERY] [-v VALUE] [-o OUTPUT] [-c CONFIG]
+
+    Manage PipeWire connections.
+
+    options:
+    -h, --help            show this help message and exit
+    -s, --save            Save wires
+    -l, --load            Load wires
+    -d {links,ports,nodes}, --data {links,ports,nodes}
+         Select data type (links, ports, nodes) for searching
+    -k, --keys            Print all keys of data
+    -i, --list            List all items of data
+    -q QUERY, --query QUERY
+         Search key
+    -v VALUE, --value VALUE
+         Search value
+    -o OUTPUT, --output OUTPUT
+         Output key for the search
+    -c CONFIG, --config CONFIG
+         Config file to use (default: pipewirewires.conf)
