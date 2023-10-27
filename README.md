@@ -23,14 +23,14 @@ Then download the pipewire-script.sh file and run it with the desired option
     -s, --save            Save wires
     -l, --load            Load wires
     -d {links,ports,nodes}, --data {links,ports,nodes}
-         Select data type (links, ports, nodes) for searching
+                          Select data type (links, ports, nodes) for searching
     -k, --keys            Print all keys of data
     -i, --list            List all items of data
     -q QUERY, --query QUERY
-         Search key
+                          Search key
     -v VALUE, --value VALUE
-         Search value
+                          Search value
     -o OUTPUT, --output OUTPUT
-         Output key for the search
+                          Output key for the search
     -c CONFIG, --config CONFIG
-         Config file to use (default: pipewirewires.conf)
+                          Config file to use (default: pipewirewires.conf)
