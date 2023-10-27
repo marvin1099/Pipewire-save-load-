@@ -2,7 +2,7 @@
 
 Messy script to save and load your pipewire wires.  
 Also a search function is included since its nice to have.  
-Also keep in mind the currend version is only compatible with configs created at 0.3.2 or higher.  
+Also keep in mind the current version is only compatible with configs created at 0.3.2 or higher.  
 I want to say I used AI a lot for to make this script,   
 this is just one of these set it and forget it scripts.
 
