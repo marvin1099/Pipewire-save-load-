@@ -12,6 +12,12 @@ Main Repo: https://codeberg.org/marvin1099/Pipewire-save-load/releases
 Backup Repo: https://github.com/marvin1099/Pipewire-save-load/releases  
 Then download the pipewire-script.py file and run it with the desired options   
 
+# Extra Info
+Keep in mind the script replaces / to - in innode_class and outnode_class  
+It also replaces : to - in innode_name and outnode_name  
+It is doing this to make the config look nice,  
+so if you dont want it remove it in the save and load function.  
+
 # Usage
 
     usage: pipewire-script.py [-h] [-s] [-l] [-d {links,ports,nodes}] [-k] [-i] 
