@@ -56,10 +56,10 @@ def save_wires(links, nodes, ports, output_file):
 
 
         # Match the IDs to names using nodes and ports dictionaries
-        outnode_name = next((node["node.name"] for node in nodes if node["id"] == output_node_id), "Unknown")
-        innode_name = next((node["node.name"] for node in nodes if node["id"] == input_node_id), "Unknown")
-        outnode_class = next((node["media.class"] for node in nodes if node["id"] == output_node_id), "Unknown").replace("/","-")
-        innode_class = next((node["media.class"] for node in nodes if node["id"] == input_node_id), "Unknown").replace("/","-")
+        outnode_name = next((node.get("node.nick", node["node.name"]) for node in nodes if node["id"] == output_node_id), "Unknown")
+        innode_name = next((node.get("node.nick", node["node.name"]) for node in nodes if node["id"] == input_node_id), "Unknown")
+        outnode_class = next((node.get("media.class", node.get("media.role")) for node in nodes if node["id"] == output_node_id), "Unknown")
+        innode_class = next((node.get("media.class", node.get("media.role")) for node in nodes if node["id"] == input_node_id), "Unknown")
         outport_name = next((port["port.name"] for port in ports if port["id"] == output_port_id), "Unknown")
         inport_name = next((port["port.name"] for port in ports if port["id"] == input_port_id), "Unknown")
 
@@ -68,7 +68,7 @@ def save_wires(links, nodes, ports, output_file):
         for node in nodes:
             if node["id"] == output_node_id:
                 break
-            if node["node.name"] == outnode_name and node["media.class"] == outnode_class:
+            if node.get("node.nick", node["node.name"]) == outnode_name and node.get("media.class", node.get("media.role")) == outnode_class:
                 outnode_occurrence += 1
 
         # Count occurrences for input node
@@ -76,17 +76,17 @@ def save_wires(links, nodes, ports, output_file):
         for node in nodes:
             if node["id"] == input_node_id:
                 break
-            if node["node.name"] == innode_name and node["media.class"] == innode_class:
+            if node.get("node.nick", node["node.name"]) == innode_name and node.get("media.class", node.get("media.role")) == innode_class:
                 innode_occurrence += 1
 
         # Store the connection in the connections list
         connection = {
             "outnode_name": outnode_name,
-            "outnode_class": outnode_class,
-            "innode_name": innode_name,
-            "innode_class": innode_class,
+            "outnode_class": outnode_class.replace("/", "-"),
+            "innode_name": innode_name.replace(":", "-"),
+            "innode_class": innode_class.replace("/", "-"),
             "outport_name": outport_name,
-            "inport_name": inport_name,
+            "inport_name": inport_name.replace(":", "-"),
             "outnode_occurrence": outnode_occurrence,
             "innode_occurrence": innode_occurrence
         }
@@ -151,7 +151,7 @@ def load_wires(links, nodes, ports, input_file):
         matched_outnode_id = None
         matched_innode_id = None
         for node in nodes:
-            if node["node.name"] == connection_info["outnode_name"] and node["media.class"] == connection_info["outnode_class"] and node["node.name"] != "Unknown":
+            if node.get("node.nick", node["node.name"]) == connection_info["outnode_name"].replace("-", ":") and node.get("media.class", node.get("media.role")) == connection_info["outnode_class"] and node["node.name"] != "Unknown":
                 if connection_info["outnode_occurrence"] == 0:
                     matched_outnode_id = node["id"]
                     break
@@ -159,7 +159,7 @@ def load_wires(links, nodes, ports, input_file):
                     connection_info["outnode_occurrence"] -= 1
 
         for node in nodes:
-            if node["node.name"] == connection_info["innode_name"] and node["media.class"] == connection_info["innode_class"] and node["node.name"] != "Unknown":
+            if node.get("node.nick", node["node.name"]) == connection_info["innode_name"].replace("-", ":") and node.get("media.class", node.get("media.role")) == connection_info["innode_class"] and node["node.name"] != "Unknown":
                 if connection_info["innode_occurrence"] == 0:
                     matched_innode_id = node["id"]
                     break
@@ -214,7 +214,7 @@ def main():
     parser = argparse.ArgumentParser(description="Manage PipeWire connections.")
     parser.add_argument("-s", "--save", action="store_true", help="Save wires")
     parser.add_argument("-l", "--load", action="store_true", help="Load wires")
-    parser.add_argument("-d", "--data", choices=["links", "ports", "nodes"], help="Select data type (links, ports, nodes) for searching")
+    parser.add_argument("-d", "--data", choices=["links", "ports", "nodes"], help="Select data type (links, ports, nodes) for searching or listing")
     parser.add_argument("-k", "--keys", action="store_true", help="Print all keys of data")
     parser.add_argument("-i", "--list", action="store_true", help="List all items of data")
     parser.add_argument("-q", "--query", help="Search key")
@@ -223,10 +223,11 @@ def main():
     parser.add_argument("-c", "--config", default="pipewirewires.conf", help="Config file to use (default: pipewirewires.conf)")
 
     args = parser.parse_args()
-
-    # Display help if no main arguments are provided
+    # Display help if no arguments are provided
     if not any([args.save, args.load, args.data]):
         parser.print_help()
+        if any([args.query, args.value, args.output]) or args.list or args.keys:
+            print("\nMissing 'data'\nSpecify with: -d ['links', 'ports', 'nodes']")
     else:
         pipewire_types = get_pipewire_types()
         links, nodes, ports = get_sorted_pipewire_types(pipewire_types)
