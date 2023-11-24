@@ -81,12 +81,12 @@ def save_wires(links, nodes, ports, output_file):
 
         # Store the connection in the connections list
         connection = {
-            "outnode_name": outnode_name,
+            "outnode_name": outnode_name.replace(":", "-"),
             "outnode_class": outnode_class.replace("/", "-"),
             "innode_name": innode_name.replace(":", "-"),
             "innode_class": innode_class.replace("/", "-"),
             "outport_name": outport_name,
-            "inport_name": inport_name.replace(":", "-"),
+            "inport_name": inport_name,
             "outnode_occurrence": outnode_occurrence,
             "innode_occurrence": innode_occurrence
         }
