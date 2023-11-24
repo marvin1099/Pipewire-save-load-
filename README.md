@@ -30,7 +30,7 @@ so if you dont want it remove it in the save and load function.
     -s, --save            Save wires
     -l, --load            Load wires
     -d {links,ports,nodes}, --data {links,ports,nodes}
-                          Select data type (links, ports, nodes) for searching
+                          Select data type (links, ports, nodes) for searching and listing
     -k, --keys            Print all keys of data
     -i, --list            List all items of data
     -q QUERY, --query QUERY
