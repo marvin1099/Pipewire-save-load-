@@ -1,24 +1,24 @@
-# Pipewire-save-load
+# PipewireSaveLoad
 
-Messy script to save and load your pipewire wires.  
+Python script to save and load your pipewire wires.  
 Also a search function is included since its nice to have.  
 Also keep in mind the current version is only compatible with configs created at 0.3.2 or higher.  
 I want to say I used AI a lot for to make this script,   
 this is just one of these set it and forget it scripts.
 
-# Download
-Go To  
+## Download
+Go To:  
 Main Repo: https://codeberg.org/marvin1099/Pipewire-save-load/releases  
 Backup Repo: https://github.com/marvin1099/Pipewire-save-load/releases  
 Then download the pipewire-script.py file and run it with the desired options   
 
-# Extra Info
+## Extra Info
 Keep in mind the script replaces / to - in innode_class and outnode_class  
 It also replaces : to - in innode_name and outnode_name  
 It is doing this to make the config look nice,  
 so if you dont want it remove it in the save and load function.  
 
-# Usage
+## Usage
 
     usage: pipewire-script.py [-h] [-s] [-l] [-d {links,ports,nodes}] [-k] [-i] 
                               [-q QUERY] [-v VALUE] [-o OUTPUT] [-c CONFIG]
