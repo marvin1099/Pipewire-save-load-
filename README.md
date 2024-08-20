@@ -13,11 +13,11 @@ Backup Repo: https://github.com/marvin1099/Pipewire-save-load/releases
 Then download the pipewire-script.py file and run it with the desired options   
 
 ## Extra Info
-Since i have removed the replace commands, 
-your old config my not work with v0.5
-to make shure it works load the config with v0.4,
-then save with version v0.5
-versions before v0.3.2 are not compatible with,
+Since i have removed the replace commands,  
+your old config my not work with v0.5  
+to make shure it works load the config with v0.4,  
+then save with version v0.5  
+versions before v0.3.2 are not compatible with,  
 with v0.3.2 and above.
 
 ## Usage
